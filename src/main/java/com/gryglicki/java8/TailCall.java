@@ -1,0 +1,11 @@
+package com.gryglicki.java8;
+
+/**
+ * Created by Michał Gryglicki, PL on 23/08/16.
+ */
+@FunctionalInterface
+public interface TailCall {
+    TailCall get();
+
+    default boolean terminated() { return false; }
+}
