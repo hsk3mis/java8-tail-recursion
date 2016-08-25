@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.stream.Stream;
 
 /**
+ * Tail recursive implementation that prints to the stream - don't accumulate the result.
  * Created by Michał Gryglicki, PL on 23/08/16.
  */
 public class PrintSquaresTailRecursive {

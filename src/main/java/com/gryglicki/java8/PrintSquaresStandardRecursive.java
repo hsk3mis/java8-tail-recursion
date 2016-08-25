@@ -3,6 +3,7 @@ package com.gryglicki.java8;
 import java.io.PrintStream;
 
 /**
+ * Standard recursive implementation.
  * Created by Michał Gryglicki, PL on 23/08/16.
  */
 public class PrintSquaresStandardRecursive {

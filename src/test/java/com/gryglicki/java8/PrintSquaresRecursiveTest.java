@@ -1,27 +1,27 @@
 package com.gryglicki.java8;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.*;
+import static com.gryglicki.java8.utils.AccumulatedResultsUtils.numberOfAccumulatedResults;
+import static com.gryglicki.java8.utils.StackTraceUtils.countMatchesInStackTrace;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
+ * Test of simple and tail recursive optimized versions that print to the stream.
  * Created by Michał Gryglicki, PL on 24/08/16.
  */
 public class PrintSquaresRecursiveTest {
 
     private ByteArrayOutputStream outputStream;
-    private PrintStream ps;
 
     @Before
     public void setUp() {
         outputStream = new ByteArrayOutputStream();
-        ps = new PrintStream(outputStream);
     }
 
     @Test
@@ -29,10 +29,11 @@ public class PrintSquaresRecursiveTest {
         //Given
         int max = 25;
         //When
-        PrintSquaresStandardRecursive.printSquaresUntil(max, ps);
+        try (PrintStream ps = new PrintStream(outputStream)) {
+            PrintSquaresStandardRecursive.printSquaresUntil(max, ps);
+        }
         //Then
-        String output = outputStream.toString();
-        System.out.println(output);
+        assertEquals(max, numberOfAccumulatedResults(outputStream.toString()));
     }
 
     @Test
@@ -41,7 +42,7 @@ public class PrintSquaresRecursiveTest {
         int max = 25;
         int exceptionThreshold = 20;
         //When
-        try {
+        try (PrintStream ps = new PrintStream(outputStream)) {
             PrintSquaresStandardRecursive.printSquaresWithExceptionUntil(max, exceptionThreshold, ps);
         } catch (RuntimeException ex) {
             //Then
@@ -54,10 +55,11 @@ public class PrintSquaresRecursiveTest {
         //Given
         int max = 25;
         //When
-        PrintSquaresTailRecursive.printSquaresUntil(max, ps);
+        try (PrintStream ps = new PrintStream(outputStream)) {
+            PrintSquaresTailRecursive.printSquaresUntil(max, ps);
+        }
         //Then
-        String output = outputStream.toString();
-        System.out.println(output);
+        assertEquals(max, numberOfAccumulatedResults(outputStream.toString()));
     }
 
     @Test
@@ -66,7 +68,7 @@ public class PrintSquaresRecursiveTest {
         int max = 25;
         int exceptionThreshold = 20;
         //When
-        try {
+        try (PrintStream ps = new PrintStream(outputStream)) {
             PrintSquaresTailRecursive.printSquaresWithExceptionUntil(max, exceptionThreshold, ps);
         } catch (RuntimeException ex) {
             //Then
@@ -74,39 +76,4 @@ public class PrintSquaresRecursiveTest {
         }
     }
 
-    @Test
-    public void accumulate_squares_using_tail_recursion_should_work() {
-        //Given
-        int max = 25;
-        //When
-        String resultAccumulator = AccumulateSquaresTailRecursive.accumulateSquaresUntil(max);
-        //Then
-        System.out.println(resultAccumulator);
-    }
-
-    @Test
-    public void accumulate_squares_using_tail_recursion_should_have_short_stacktrace() {
-        //Given
-        int max = 25;
-        int exceptionThreshold = 20;
-        //When
-        try {
-            String resultAccumulator = AccumulateSquaresTailRecursive.accumulateSquaresUntil(max, exceptionThreshold);
-        } catch (RuntimeException ex) {
-            //Then
-            assertEquals(1, countMatchesInStackTrace(ex, "AccumulateSquaresTailRecursive.accumulateSquare("));
-        }
-    }
-
-    private int countMatchesInStackTrace(Throwable throwable, String match) {
-        String stackTrace = stackTraceAsString(throwable);
-        return StringUtils.countMatches(stackTrace, match);
-    }
-
-    private String stackTraceAsString(Throwable throwable) {
-        ByteArrayOutputStream stackTraceOutputStream = new ByteArrayOutputStream();
-        PrintStream stackTracePs = new PrintStream(stackTraceOutputStream);
-        throwable.printStackTrace(stackTracePs);
-        return stackTraceOutputStream.toString();
-    }
 }
